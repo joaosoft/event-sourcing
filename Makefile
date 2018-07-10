@@ -1,5 +1,5 @@
 run:
-	go run ./bin/launcher/main.go
+	go run ./main.go
 
 build:
 	go build .
@@ -10,5 +10,8 @@ fmt:
 vet:
 	go vet ./*
 
-gometalinter:
+meta:
 	gometalinter ./*
+
+migrate:
+	sql-migrate up --config=config/dbconfig.yml

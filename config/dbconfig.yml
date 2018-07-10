@@ -1,0 +1,5 @@
+development:
+  dialect: postgres
+  datasource: user=postgres password= dbname=eventsourcing sslmode=disable
+  dir: schema/db/migrations/postgres
+  table: migrations

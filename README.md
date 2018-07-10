@@ -1,33 +1,54 @@
-# logger
-[![Build Status](https://travis-ci.org/joaosoft/logger.svg?branch=master)](https://travis-ci.org/joaosoft/logger) | [![codecov](https://codecov.io/gh/joaosoft/logger/branch/master/graph/badge.svg)](https://codecov.io/gh/joaosoft/logger) | [![Go Report Card](https://goreportcard.com/badge/github.com/joaosoft/logger)](https://goreportcard.com/report/github.com/joaosoft/logger) | [![GoDoc](https://godoc.org/github.com/joaosoft/logger?status.svg)](https://godoc.org/github.com/joaosoft/logger)
+# event-sourcing
+[![Build Status](https://travis-ci.org/joaosoft/event-sourcing.svg?branch=master)](https://travis-ci.org/joaosoft/event-sourcing) | [![codecov](https://codecov.io/gh/joaosoft/event-sourcing/branch/master/graph/badge.svg)](https://codecov.io/gh/joaosoft/event-sourcing) | [![Go Report Card](https://goreportcard.com/badge/github.com/joaosoft/event-sourcing)](https://goreportcard.com/report/github.com/joaosoft/event-sourcing) | [![GoDoc](https://godoc.org/github.com/joaosoft/event-sourcing?status.svg)](https://godoc.org/github.com/joaosoft/event-sourcing)
 
-A simplified logger that allows you to add complexity depending of your requirements.
-The easy way to use the logger:
-``` Go
-import log github.com/joaosoft/logger
+A simplified event-sourcing that allows you to add complexity depending of your requirements.
+The easy way to use the event-sourcing:
+```go
+import log github.com/joaosoft/event-sourcing
 
+conn, err := sql.Open("postgres", "postgres://postgres:postgres@localhost:5432/postgres?sslmode=disable")
+if err != nil {
+    panic(err)
+}
 
+eventSourcing := models.NewEventSourcing(storage.NewStorage(conn))
 
+// person - with managed events by the user
+aggregate1 := models.NewAggregate("person_001", "person", &Person{
+    Name: "joao",
+    Age:  30,
+})
+aggregate1.AddEventHandler("person_change_name", handler_person_change_name)
+aggregate1.Causes(&models.Event{
+    Id:        common.NewULID(),
+    Name:      "person_change_name",
+    Data:      PersonChangeNameEvent{Name: "manuel"},
+    CreatedAt: time.Now(),
+})
+err = eventSourcing.Save(aggregate1)
+if err != nil {
+    fmt.Println(err)
+}
 
-log.Info("hello")
+// address - with automatic event generation
+aggregate2 := models.NewAggregate("address_001", "address", &Address{
+    Street: "caminho do senhor da luz",
+    Number: 10,
+})
+err = eventSourcing.Save(aggregate2)
+if err != nil {
+    fmt.Println(err)
+}
+
+fmt.Println("DONE")
 ```
-you also can config it, as i prefer, please see below
-After a read of the project https://gitlab.com/vredens/loggerger extracted some concepts like allowing to add tags and fields to logger infrastructure. 
 
 ###### If i miss something or you have something interesting, please be part of this project. Let me know! My contact is at the end.
 
 ## With support for
-* formatted messages
-* prefixes (special prefixes: DATE, TIME, TIMESTAMP, LEVEL, IP, PACKAGE, FUNCTION, FILE, TRACE, STACK)
-* tags
-* fields
-* writers at [[writer]](https://github.com/joaosoft/writers/tree/master/bin/examples)
-  * to file (with queue processing)[1] 
-  * to stdout (with queue processing)[1] [[here]](https://github.com/joaosoft/writers/tree/master/examples)
-* addition commands (ToError(&err))
+* add manual events
+* auto generate events
   
-  [1] this writer allows you to continue the processing and dispatch the logging
-
 ## Dependecy Management 
 >### Dep
 
@@ -38,105 +59,11 @@ Project dependencies are managed using Dep. Read more about [Dep](https://github
 
 >### Go
 ```
-go get github.com/joaosoft/logger/service
-```
-
-## Interface 
-```go
-type Logger interface {
-	SetLevel(level Level)
-
-	With(prefixes, tags, fields map[string]interface{}) ILogger
-	WithPrefixes(prefixes map[string]interface{}) ILogger
-	WithTags(tags map[string]interface{}) ILogger
-	WithFields(fields map[string]interface{}) ILogger
-
-	WithPrefix(key string, value interface{}) ILogger
-	WithTag(key string, value interface{}) ILogger
-	WithField(key string, value interface{}) ILogger
-
-	Debug(message interface{}) IAddition
-	Info(message interface{}) IAddition
-	Warn(message interface{}) IAddition
-	Error(message interface{}) IAddition
-
-	Debugf(format string, arguments ...interface{}) IAddition
-	Infof(format string, arguments ...interface{}) IAddition
-	Warnf(format string, arguments ...interface{}) IAddition
-	Errorf(format string, arguments ...interface{}) IAddition
-	
-	Reconfigure(options ...LoggerOption)
-}
-
-type IAddition interface {
-	ToError(err *error) IAddition
-	ToErrorData(err *errors.ErrorData) IAddition
-}
-
-type ISpecialWriter interface {
-	SWrite(prefixes map[string]interface{}, tags map[string]interface{}, message interface{}, fields map[string]interface{}) (n int, err error)
-}
-
+go get github.com/joaosoft/event-sourcing
 ```
 
 ## Usage 
-This examples are available in the project at [logger/examples](https://github.com/joaosoft/logger/tree/master/examples)
-
-```go
-//
-// log to text
-fmt.Println(":: LOG TEXT")
-log := logger.NewLog(
-    logger.WithLevel(logger.InfoLevel), 
-    logger.WithFormatHandler(logger.TextFormatHandler), 
-    logger.WithWriter(os.Stdout)).
-        With(
-            map[string]interface{}{"level": logger.LEVEL, "timestamp": logger.TIMESTAMP, "date": logger.DATE, "time": logger.TIME},
-            map[string]interface{}{"service": "log"}, 
-            map[string]interface{}{"name": "joão"})
-
-// logging...
-log.Error("isto é uma mensagem de error")
-log.Info("isto é uma mensagem de info")
-log.Debug("isto é uma mensagem de debug")
-
-fmt.Println("--------------")
-<-time.After(time.Second)
-
-//
-// log to json
-fmt.Println(":: LOG JSON")
-log = logger.NewLog(
-    logger.WithLevel(logger.InfoLevel),
-    logger.WithFormatHandler(logger.JsonFormatHandler),
-    logger.WithWriter(os.Stdout)).
-        With(
-            map[string]interface{}{"level": logger.LEVEL, "timestamp": logger.TIMESTAMP, "date": logger.DATE, "time": logger.TIME},
-            map[string]interface{}{"service": "log"},
-            map[string]interface{}{"name": "joão"})
-
-// logging...
-log.Errorf("isto é uma mensagem de error %s", "hello")
-log.Infof("isto é uma  mensagem de info %s ", "hi")
-log.Debugf("isto é uma mensagem de debug %s", "ehh")
-
-// error...
-var err error
-log.Errorf("deu erro na linha %d", 201).ToError(&err)
-fmt.Printf("ERROR: %s", err.Error())
-```
-
-###### Output 
-
-```javascript
-:: LOG TEXT
-{prefixes:map[level:error time:2018-03-20 02:47:21] tags:map[service:log] message:isto é uma mensagem de error fields:map[name:joão]}
-{prefixes:map[level:info time:2018-03-20 02:47:21] tags:map[service:log] message:isto é uma mensagem de info fields:map[name:joão]}
---------------
-:: LOG JSON
-{"prefixes":{"level":"error","time":"2018-03-20 02:47:22"},"tags":{"service":"log"},"message":"isto é uma mensagem de error hello","fields":{"name":"joão"}}
-{"prefixes":{"level":"info","time":"2018-03-20 02:47:22"},"tags":{"service":"log"},"message":"isto é uma  mensagem de info hi ","fields":{"name":"joão"}}
-```
+This examples are available in the project at [event-sourcing/main.go](https://github.com/joaosoft/event-sourcing/tree/master/main.go)
 
 ## Known issues
 * all the maps do not guarantee order of the items! 
