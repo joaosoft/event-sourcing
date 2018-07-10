@@ -52,7 +52,7 @@ func main() {
 	// address - with automatic event generation
 	aggregate2 := models.NewAggregate("address_001", "address", &Address{
 		Street: "caminho do senhor da luz",
-		Number: 10,
+		Number: 7,
 	})
 	err = eventSourcing.Save(aggregate2)
 	if err != nil {

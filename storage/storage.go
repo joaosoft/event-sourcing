@@ -5,7 +5,7 @@ import (
 	"database/sql"
 	"encoding/json"
 	"event-sourcing/models"
-	logger "github.com/joaosoft/logger"
+	"github.com/joaosoft/logger"
 	_ "github.com/lib/pq"
 	"github.com/oklog/ulid"
 )
@@ -18,7 +18,7 @@ func NewStorage(db *sql.DB) *Storage {
 	return &Storage{db: db}
 }
 
-func (storage *Storage) GetAggregate(id, typ string) (*models.Aggregate, error) {
+func (storage *Storage) GetAggregate(id, typ string, obj interface{}) (*models.Aggregate, error) {
 
 	// aggregate
 	var aggregate = models.Aggregate{Id: id, Type: typ}
@@ -36,13 +36,13 @@ func (storage *Storage) GetAggregate(id, typ string) (*models.Aggregate, error) 
 	}
 
 	// snapshot
-	aggregate.Data = make([]byte, 0)
+	aggregateBytes := make([]byte, 0)
 	row = storage.db.QueryRow(`
 		SELECT data, created_at
 		FROM eventsourcing.snapshot
 		WHERE aggregate_id = $1 AND aggregate_type = $2 AND aggregate_version = $3
 	`, aggregate.Id, aggregate.Type, aggregate.Version)
-	if err := row.Scan(&aggregate.Data, &aggregate.CreatedAt); err != nil {
+	if err := row.Scan(&aggregateBytes, &aggregate.CreatedAt); err != nil {
 		logger.WithField("error", err.Error()).Error("error getting snapshot from database")
 		return nil, err
 	}
@@ -73,6 +73,13 @@ func (storage *Storage) GetAggregate(id, typ string) (*models.Aggregate, error) 
 		}
 		aggregate.Events = append(aggregate.Events, &event)
 	}
+
+	err = json.Unmarshal(aggregateBytes, obj)
+	if err != nil {
+		logger.WithField("error", err.Error()).Error("error unmarshal aggregate data")
+		return nil, err
+	}
+	aggregate.Data = obj
 
 	return &aggregate, nil
 }

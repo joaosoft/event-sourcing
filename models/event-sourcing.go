@@ -1,7 +1,6 @@
 package models
 
 import (
-	"encoding/json"
 	"event-sourcing/common"
 	"github.com/joaosoft/logger"
 	"github.com/joaosoft/mapper"
@@ -10,7 +9,7 @@ import (
 )
 
 type IStorage interface {
-	GetAggregate(id, typ string) (*Aggregate, error)
+	GetAggregate(id, typ string, obj interface{}) (aggregate *Aggregate, err error)
 	StoreAggregate(aggregate *Aggregate) (err error)
 }
 
@@ -26,7 +25,8 @@ func NewEventSourcing(storage IStorage) *EventSourcing {
 func (eventsourcing *EventSourcing) Save(aggregate *Aggregate) (err error) {
 
 	if len(aggregate.Events) == 0 {
-		oldAggregate, err := eventsourcing.storage.GetAggregate(aggregate.Id, aggregate.Type)
+		obj := reflect.New(reflect.TypeOf(aggregate.Data).Elem()).Interface()
+		oldAggregate, err := eventsourcing.storage.GetAggregate(aggregate.Id, aggregate.Type, obj)
 		if err != nil {
 			logger.WithField("error", err.Error()).Error("error saving aggregate")
 			return err
@@ -45,20 +45,13 @@ func (eventsourcing *EventSourcing) Save(aggregate *Aggregate) (err error) {
 func getAggregateEventsByMapping(oldAggregate *Aggregate, newAggregate *Aggregate) (events []IEvent, err error) {
 
 	eventMapper := mapper.NewMapper(mapper.WithLogger(logger.Get()))
-	oldObj := reflect.New(reflect.TypeOf(newAggregate.Data).Elem()).Interface()
 
 	var oldMappings map[string]interface{}
 	var newMappings map[string]interface{}
 
 	// old data
 	if oldAggregate != nil {
-		err = json.Unmarshal(oldAggregate.Data.([]byte), &oldObj)
-		if err != nil {
-			logger.WithField("error", err.Error()).Error("error unmarshal aggregate")
-			return nil, err
-		}
-
-		oldMappings, err = eventMapper.Map(reflect.ValueOf(oldObj).Elem().Interface())
+		oldMappings, err = eventMapper.Map(reflect.ValueOf(oldAggregate.Data).Elem().Interface())
 		if err != nil {
 			logger.WithField("error", err.Error()).Error("error mapping aggregate")
 			return nil, err
