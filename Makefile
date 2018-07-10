@@ -1,3 +1,6 @@
+init:
+	go get github.com/rubenv/sql-migrate/...
+
 run:
 	go run ./main.go
 

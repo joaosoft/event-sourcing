@@ -3,6 +3,17 @@
 
 A simplified event-sourcing that allows you to add complexity depending of your requirements.
 The easy way to use the event-sourcing:
+
+## Installation
+```
+docker-compose up -d postgres
+
+make init
+make migrate
+make run
+```
+
+## Usage
 ```go
 import log github.com/joaosoft/event-sourcing
 
