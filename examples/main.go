@@ -1,10 +1,10 @@
 package main
 
 import (
-	"../common"
-	"../models"
-	"../storage"
 	"database/sql"
+	"event-sourcing/common"
+	"event-sourcing/models"
+	"event-sourcing/storage"
 	"fmt"
 	logger "github.com/joaosoft/logger"
 	"time"
