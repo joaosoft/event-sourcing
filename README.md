@@ -74,7 +74,7 @@ type PersonChangeNameEvent struct {
 	Name string `json:"name"`
 }
 ```
-This examples are available in the project at [event-sourcing/main.go](https://github.com/joaosoft/event-sourcing/tree/master/main.go)
+This examples are available in the project at [event-sourcing/examples/main.go](https://github.com/joaosoft/event-sourcing/tree/master/examples/main.go)
 
 ###### If i miss something or you have something interesting, please be part of this project. Let me know! My contact is at the end.
 

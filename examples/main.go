@@ -6,7 +6,7 @@ import (
 	"event-sourcing/models"
 	"event-sourcing/storage"
 	"fmt"
-	"github.com/joaosoft/logger"
+	logger "github.com/joaosoft/logger"
 	"time"
 )
 
