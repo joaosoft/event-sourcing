@@ -2,8 +2,8 @@ package models
 
 import (
 	"event-sourcing/common"
-	"github.com/joaosoft/logger"
-	"github.com/joaosoft/mapper"
+	logger "github.com/joaosoft/logger"
+	mapper "github.com/joaosoft/mapper"
 	"reflect"
 	"strings"
 )

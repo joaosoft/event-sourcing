@@ -5,7 +5,7 @@ import (
 	"database/sql"
 	"encoding/json"
 	"event-sourcing/models"
-	"github.com/joaosoft/logger"
+	logger "github.com/joaosoft/logger"
 	_ "github.com/lib/pq"
 	"github.com/oklog/ulid"
 )
