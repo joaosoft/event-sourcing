@@ -1,5 +1,6 @@
 ---
 language: go
+go_import_path: github.com/joaosoft/event-sourcing
 sudo: false
 notifications:
   email: joaosoft@gmail.com
