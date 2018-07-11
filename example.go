@@ -1,4 +1,4 @@
-package main
+package event_sourcing
 
 import (
 	"database/sql"
