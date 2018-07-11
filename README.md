@@ -53,6 +53,7 @@ if err != nil {
 
 fmt.Println("DONE")
 ```
+This examples are available in the project at [event-sourcing/main.go](https://github.com/joaosoft/event-sourcing/tree/master/main.go)
 
 ###### If i miss something or you have something interesting, please be part of this project. Let me know! My contact is at the end.
 
@@ -72,13 +73,6 @@ Project dependencies are managed using Dep. Read more about [Dep](https://github
 ```
 go get github.com/joaosoft/event-sourcing
 ```
-
-## Usage 
-This examples are available in the project at [event-sourcing/main.go](https://github.com/joaosoft/event-sourcing/tree/master/main.go)
-
-## Known issues
-* all the maps do not guarantee order of the items! 
-
 
 ## Follow me at
 Facebook: https://www.facebook.com/joaosoft
