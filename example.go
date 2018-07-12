@@ -2,12 +2,11 @@ package main
 
 import (
 	"database/sql"
+	"event-sourcing/common"
+	"event-sourcing/models"
+	"event-sourcing/storage"
 	"fmt"
 	"time"
-
-	"./common"
-	"./models"
-	"./storage"
 
 	logger "github.com/joaosoft/logger"
 )

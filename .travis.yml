@@ -12,7 +12,7 @@ jobs:
       os: linux
       go: master
       script:
-        - go build -v example.go
+        - go build -v
 
       after_success:
         - bash <(curl -s https://codecov.io/bash)
