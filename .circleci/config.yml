@@ -23,5 +23,6 @@ jobs:
 
       # specify any bash command here prefixed with `run: `
       - run: go get -u github.com/golang/dep/cmd/dep
+      - run: dep init
       - run: dep ensure
       - run: go build -v github.com/joaosoft/event-sourcing
