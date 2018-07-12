@@ -24,4 +24,4 @@ jobs:
       # specify any bash command here prefixed with `run: `
       - run: go get -u github.com/golang/dep/cmd/dep
       - run: dep ensure -vendor-only -v
-      - run: go build -v
+      - run: go build -v example.go
