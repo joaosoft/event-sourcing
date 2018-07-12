@@ -6,7 +6,7 @@ jobs:
   build:
     docker:
       # specify the version
-      - image: circleci/golang:1.9
+      - image: circleci/golang:1.10.0
 
       # Specify service dependencies here if necessary
       # CircleCI maintains a library of pre-built images
@@ -23,5 +23,5 @@ jobs:
 
       # specify any bash command here prefixed with `run: `
       - run: go get -u golang.org/x/tools/cmd/goimports
-      - run: dep ensure -vendor-only
-      - run: go build -v github.com/joaosoft/event-sourcing
+      - run: dep ensure -vendor-only -v
+      - run: go build -v
