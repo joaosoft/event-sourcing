@@ -1,4 +1,4 @@
-package event_sourcing
+package main
 
 import (
 	"database/sql"
@@ -6,8 +6,9 @@ import (
 	"event-sourcing/models"
 	"event-sourcing/storage"
 	"fmt"
-	logger "github.com/joaosoft/logger"
 	"time"
+
+	logger "github.com/joaosoft/logger"
 )
 
 func init() {

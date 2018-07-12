@@ -1,10 +1,9 @@
 package models
 
 import (
-	"time"
 	"github.com/oklog/ulid"
+	"time"
 )
-
 
 type IEvent interface {
 	GetId() ulid.ULID
