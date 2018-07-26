@@ -39,8 +39,12 @@
 
 [[constraint]]
   name = "github.com/oklog/ulid"
-  version = "0.3.0"
+  version = "1.0.0"
 
 [prune]
   go-tests = true
   unused-packages = true
+
+[[override]]
+  name = "github.com/satori/go.uuid"
+  branch = "master"

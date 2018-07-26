@@ -1,5 +1,5 @@
 # event-sourcing
-[![Build Status](https://travis-ci.org/joaosoft/event-sourcing.svg?branch=master)](https://travis-ci.org/joaosoft/event-sourcing) | [![codecov](https://codecov.io/gh/joaosoft/event-sourcing/branch/master/graph/badge.svg)](https://codecov.io/gh/joaosoft/event-sourcing) | [![Go Report Card](https://goreportcard.com/badge/github.com/joaosoft/event-sourcing)](https://goreportcard.com/report/github.com/joaosoft/event-sourcing) | [![GoDoc](https://godoc.org/github.com/joaosoft/event-sourcing?status.svg)](https://godoc.org/github.com/joaosoft/event-sourcing)
+[![Build Status](https://travis-ci.org/joaosoft/event-sourcing.svg?branch=master)](https://travis-ci.org/joaosoft/event-sourcing) | [![codecov](https://codecov.io/gh/joaosoft/event-sourcing/branch/master/graph/badge.svg)](https://codecov.io/gh/joaosoft/event-sourcing) | [![Go Report Card](https://goreportcard.com/badge/github.com/joaosoft/event-sourcing)](https://goreportcard.com/report/github.com/joaosoft/event-sourcing) | [![GoDoc](https://godoc.org/github.com/joaosoft/event-sourcing?status.svg)](https://godoc.org/github.com/joaosoft/event-sourcing)[![slack.cloudfoundry.org](https://slack.cloudfoundry.org/badge.svg)](https://slack.cloudfoundry.org)
 
 A simplified event-sourcing that allows you to add complexity depending of your requirements.
 The easy way to use the event-sourcing:

@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"encoding/json"
 	"event-sourcing/models"
+
 	logger "github.com/joaosoft/logger"
 	_ "github.com/lib/pq"
 	"github.com/oklog/ulid"
@@ -87,7 +88,6 @@ func (storage *Storage) GetAggregate(id, typ string, obj interface{}) (*models.A
 func (storage *Storage) StoreAggregate(aggregate *models.Aggregate) (err error) {
 
 	if len(aggregate.Events) == 0 {
-		var err error
 		logger.Error("there is no event on the aggregate").ToError(&err)
 		return err
 	}
@@ -100,7 +100,7 @@ func (storage *Storage) StoreAggregate(aggregate *models.Aggregate) (err error) 
 
 	tx, err := storage.db.Begin()
 	if err != nil {
-		return
+		return err
 	}
 
 	defer func() {

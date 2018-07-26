@@ -1,8 +1,9 @@
 package models
 
 import (
-	"github.com/oklog/ulid"
 	"time"
+
+	"github.com/oklog/ulid"
 )
 
 type IEvent interface {
