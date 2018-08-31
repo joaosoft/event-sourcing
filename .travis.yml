@@ -7,8 +7,10 @@ jobs:
   include:
     - stage: test
       install:
-        - go get -u github.com/golang/dep/cmd/dep
-        - dep ensure
+#        - go get -u github.com/golang/dep/cmd/dep
+#        - dep ensure
+        - go get github.com/joaosoft/dependency
+        - dependency get
       os: linux
       go: master
       script:
