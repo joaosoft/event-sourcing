@@ -2,10 +2,11 @@ package models
 
 import (
 	"event-sourcing/common"
-	logger "github.com/joaosoft/logger"
-	mapper "github.com/joaosoft/mapper"
 	"reflect"
 	"strings"
+
+	logger "github.com/joaosoft/logger"
+	mapper "github.com/joaosoft/mapper"
 )
 
 type IStorage interface {
@@ -44,7 +45,7 @@ func (eventsourcing *EventSourcing) Save(aggregate *Aggregate) (err error) {
 
 func getAggregateEventsByMapping(oldAggregate *Aggregate, newAggregate *Aggregate) (events []IEvent, err error) {
 
-	eventMapper := mapper.NewMapper(mapper.WithLogger(logger.Get()))
+	eventMapper := mapper.NewMapper(mapper.WithLogger(logger.Instance))
 
 	var oldMappings map[string]interface{}
 	var newMappings map[string]interface{}
