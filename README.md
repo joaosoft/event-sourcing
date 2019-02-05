@@ -38,7 +38,7 @@ func main() {
 	}
 
 	// person - with managed events by the user
-	aggregate1 := models.NewAggregate("person_001", "person", &Person{
+	aggregate1 := models.NewAggregate("persons", "person", &Person{
 		Name: "joao",
 		Age:  30,
 	})
@@ -55,7 +55,7 @@ func main() {
 	}
 
 	// address - with automatic event generation
-	aggregate2 := models.NewAggregate("address_001", "address", &Address{
+	aggregate2 := models.NewAggregate("addresses", "address", &Address{
 		Street: "caminho do senhor da luz",
 		Number: 7,
 	})
