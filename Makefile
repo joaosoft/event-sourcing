@@ -1,5 +1,5 @@
 init:
-	go get github.com/rubenv/sql-migrate/...
+	go get github.com/joaosoft/migration
 
 run:
 	go run ./examples/main.go
@@ -17,4 +17,4 @@ meta:
 	gometalinter ./*
 
 migrate:
-	sql-migrate up --config=config/dbconfig.yml
+	migration up
