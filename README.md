@@ -17,6 +17,10 @@ make run
 ```go
 import log github.com/joaosoft/event-sourcing
 
+func init() {
+	logger.Reconfigure(logger.WithOptTag("service", "event-sourcing"))
+}
+
 type Person struct {
 	Name string `json:"name"`
 	Age  int    `json:"age"`
@@ -28,12 +32,10 @@ type Address struct {
 }
 
 func main() {
-	conn, err := sql.Open("postgres", "postgres://postgres:postgres@localhost:5432/postgres?sslmode=disable")
+	eventSourcing, err := models.NewEventSourcing()
 	if err != nil {
 		panic(err)
 	}
-
-	eventSourcing := models.NewEventSourcing(storage.NewStorage(conn))
 
 	// person - with managed events by the user
 	aggregate1 := models.NewAggregate("person_001", "person", &Person{

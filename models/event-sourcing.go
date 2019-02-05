@@ -5,8 +5,10 @@ import (
 	"reflect"
 	"strings"
 
-	logger "github.com/joaosoft/logger"
-	mapper "github.com/joaosoft/mapper"
+	"github.com/joaosoft/logger"
+	"github.com/joaosoft/manager"
+	"github.com/joaosoft/mapper"
+	"github.com/joaosoft/migration/services"
 )
 
 type IStorage interface {
@@ -15,13 +17,65 @@ type IStorage interface {
 }
 
 type EventSourcing struct {
-	storage IStorage
+	storage       IStorage
+	config        *EventSourcingConfig
+	isLogExternal bool
+	pm            *manager.Manager
+	logger        logger.ILogger
 }
 
-func NewEventSourcing(storage IStorage) *EventSourcing {
-	return &EventSourcing{
-		storage: storage,
+func NewEventSourcing(options ...EventSourcingOption) (*EventSourcing, error) {
+	config, simpleConfig, err := NewConfig()
+
+	service := &EventSourcing{
+		pm:     manager.NewManager(manager.WithRunInBackground(true)),
+		logger: logger.NewLogDefault("event-sourcing", logger.WarnLevel),
+		config: config.EventSourcing,
 	}
+
+	if service.isLogExternal {
+		service.pm.Reconfigure(manager.WithLogger(logger.Instance))
+	}
+
+	if err != nil {
+		service.logger.Error(err.Error())
+	} else if config.EventSourcing != nil {
+		service.pm.AddConfig("config_app", simpleConfig)
+		level, _ := logger.ParseLevel(config.EventSourcing.Log.Level)
+		service.logger.Debugf("setting log level to %s", level)
+		service.logger.Reconfigure(logger.WithLevel(level))
+	}
+
+	service.Reconfigure(options...)
+
+	// execute migrations
+	migration, err := services.NewCmdService(services.WithCmdConfiguration(&service.config.Migration))
+	if err != nil {
+		return nil, err
+	}
+
+	if _, err := migration.Execute(services.OptionUp, 0); err != nil {
+		return nil, err
+	}
+
+	// database
+	simpleDB := service.pm.NewSimpleDB(&config.EventSourcing.Db)
+	if err := service.pm.AddDB("db_postgres", simpleDB); err != nil {
+		logger.Error(err.Error())
+		return nil, err
+	}
+
+	simpleDB.Start(nil)
+
+	service.storage = NewStorage(simpleDB.Get(), service.logger)
+
+	// initialize services
+	if err := service.pm.Start(); err != nil {
+		return nil, err
+	}
+
+	return service, nil
+
 }
 func (eventsourcing *EventSourcing) Save(aggregate *Aggregate) (err error) {
 

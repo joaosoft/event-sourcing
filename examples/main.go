@@ -1,14 +1,12 @@
 package main
 
 import (
-	"database/sql"
 	"event-sourcing/common"
 	"event-sourcing/models"
-	"event-sourcing/storage"
 	"fmt"
 	"time"
 
-	logger "github.com/joaosoft/logger"
+	"github.com/joaosoft/logger"
 )
 
 func init() {
@@ -26,12 +24,10 @@ type Address struct {
 }
 
 func main() {
-	conn, err := sql.Open("postgres", "postgres://postgres:postgres@localhost:5432/postgres?sslmode=disable")
+	eventSourcing, err := models.NewEventSourcing()
 	if err != nil {
 		panic(err)
 	}
-
-	eventSourcing := models.NewEventSourcing(storage.NewStorage(conn))
 
 	// person - with managed events by the user
 	aggregate1 := models.NewAggregate("person_001", "person", &Person{

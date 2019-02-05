@@ -1,36 +1,37 @@
-package storage
+package models
 
 import (
 	"bytes"
 	"database/sql"
 	"encoding/json"
-	"event-sourcing/models"
 
-	logger "github.com/joaosoft/logger"
+	"github.com/joaosoft/logger"
+
 	_ "github.com/lib/pq"
 	"github.com/oklog/ulid"
 )
 
 type Storage struct {
-	db *sql.DB
+	db     *sql.DB
+	logger logger.ILogger
 }
 
-func NewStorage(db *sql.DB) *Storage {
-	return &Storage{db: db}
+func NewStorage(db *sql.DB, logger logger.ILogger) *Storage {
+	return &Storage{db: db, logger: logger}
 }
 
-func (storage *Storage) GetAggregate(id, typ string, obj interface{}) (*models.Aggregate, error) {
+func (s *Storage) GetAggregate(id, typ string, obj interface{}) (*Aggregate, error) {
 
 	// aggregate
-	var aggregate = models.Aggregate{Id: id, Type: typ}
-	row := storage.db.QueryRow(`
+	var aggregate = Aggregate{Id: id, Type: typ}
+	row := s.db.QueryRow(`
 		SELECT version, created_at, updated_at
 		FROM eventsourcing.aggregate
 		WHERE id = $1 AND type = $2
 	`, aggregate.Id, aggregate.Type)
 
 	if err := row.Scan(&aggregate.Version, &aggregate.CreatedAt, &aggregate.UpdatedAt); err != nil && err != sql.ErrNoRows {
-		logger.WithField("error", err.Error()).Error("error getting aggregate from database")
+		s.logger.WithField("error", err.Error()).Error("error getting aggregate from database")
 		return nil, err
 	} else if err == sql.ErrNoRows {
 		return nil, nil
@@ -38,38 +39,38 @@ func (storage *Storage) GetAggregate(id, typ string, obj interface{}) (*models.A
 
 	// snapshot
 	aggregateBytes := make([]byte, 0)
-	row = storage.db.QueryRow(`
+	row = s.db.QueryRow(`
 		SELECT data, created_at
 		FROM eventsourcing.snapshot
 		WHERE aggregate_id = $1 AND aggregate_type = $2 AND aggregate_version = $3
 	`, aggregate.Id, aggregate.Type, aggregate.Version)
 	if err := row.Scan(&aggregateBytes, &aggregate.CreatedAt); err != nil {
-		logger.WithField("error", err.Error()).Error("error getting snapshot from database")
+		s.logger.WithField("error", err.Error()).Error("error getting snapshot from database")
 		return nil, err
 	}
 
 	// events
-	rows, err := storage.db.Query(`
+	rows, err := s.db.Query(`
 		SELECT id, data, created_at
 		FROM eventsourcing.event
 		WHERE aggregate_id = $1 AND aggregate_type = $2 AND aggregate_version = $3
 	`, aggregate.Id, aggregate.Type, aggregate.Version)
 	if err != nil {
-		logger.WithField("error", err.Error()).Error("error getting events from database")
+		s.logger.WithField("error", err.Error()).Error("error getting events from database")
 		return nil, err
 	}
 
 	defer rows.Close()
 	for rows.Next() {
-		var event models.Event
+		var event Event
 		var id string
 		if err := rows.Scan(&id, &event.Data, &event.CreatedAt); err != nil {
-			logger.WithField("error", err.Error()).Error("error getting event from database")
+			s.logger.WithField("error", err.Error()).Error("error getting event from database")
 			return nil, err
 		}
 		event.Id, err = ulid.Parse(id)
 		if err != nil {
-			logger.WithField("error", err.Error()).Error("error converting ulid from database")
+			s.logger.WithField("error", err.Error()).Error("error converting ulid from database")
 			return nil, err
 		}
 		aggregate.Events = append(aggregate.Events, &event)
@@ -77,7 +78,7 @@ func (storage *Storage) GetAggregate(id, typ string, obj interface{}) (*models.A
 
 	err = json.Unmarshal(aggregateBytes, obj)
 	if err != nil {
-		logger.WithField("error", err.Error()).Error("error unmarshal aggregate data")
+		s.logger.WithField("error", err.Error()).Error("error unmarshal aggregate data")
 		return nil, err
 	}
 	aggregate.Data = obj
@@ -85,20 +86,19 @@ func (storage *Storage) GetAggregate(id, typ string, obj interface{}) (*models.A
 	return &aggregate, nil
 }
 
-func (storage *Storage) StoreAggregate(aggregate *models.Aggregate) (err error) {
+func (s *Storage) StoreAggregate(aggregate *Aggregate) (err error) {
 
 	if len(aggregate.Events) == 0 {
-		logger.Error("there is no event on the aggregate").ToError(&err)
-		return err
+		return s.logger.Error("there is no event on the aggregate").ToError()
 	}
 
 	var aggregateData = &bytes.Buffer{}
 	if err := json.NewEncoder(aggregateData).Encode(aggregate.Data); err != nil {
-		logger.WithField("error", err.Error()).Error("error encoding aggregate data")
+		s.logger.WithField("error", err.Error()).Error("error encoding aggregate data")
 		return err
 	}
 
-	tx, err := storage.db.Begin()
+	tx, err := s.db.Begin()
 	if err != nil {
 		return err
 	}
@@ -106,7 +106,7 @@ func (storage *Storage) StoreAggregate(aggregate *models.Aggregate) (err error) 
 	defer func() {
 		if tx != nil {
 			if err != nil {
-				logger.WithField("error", err.Error()).Error("doing rollback of transaction on database")
+				s.logger.WithField("error", err.Error()).Error("doing rollback of transaction on database")
 				tx.Rollback()
 			} else {
 				err = tx.Commit()
@@ -122,7 +122,7 @@ func (storage *Storage) StoreAggregate(aggregate *models.Aggregate) (err error) 
 	`, aggregate.Id, aggregate.Type)
 
 	if err := row.Scan(&aggregate.Version); err != nil && err != sql.ErrNoRows {
-		logger.WithField("error", err.Error()).Error("error getting aggregate from database")
+		s.logger.WithField("error", err.Error()).Error("error getting aggregate from database")
 		return err
 	}
 
@@ -142,7 +142,7 @@ func (storage *Storage) StoreAggregate(aggregate *models.Aggregate) (err error) 
 	`, aggregate.Version, aggregate.Id, aggregate.Type)
 	}
 	if err != nil {
-		logger.WithField("error", err.Error()).Error("error inserting/updating aggregate on database")
+		s.logger.WithField("error", err.Error()).Error("error inserting/updating aggregate on database")
 		return err
 	}
 
@@ -152,7 +152,7 @@ func (storage *Storage) StoreAggregate(aggregate *models.Aggregate) (err error) 
 		VALUES ($1, $2, $3, $4, $5, $6)
 	`)
 	if err != nil {
-		logger.WithField("error", err.Error()).Error("error inserting event from database")
+		s.logger.WithField("error", err.Error()).Error("error inserting event from database")
 		return err
 	}
 
@@ -160,11 +160,11 @@ func (storage *Storage) StoreAggregate(aggregate *models.Aggregate) (err error) 
 	for _, newEvent := range aggregate.Events {
 		var eventData = &bytes.Buffer{}
 		if err := json.NewEncoder(eventData).Encode(newEvent.GetData()); err != nil {
-			logger.WithField("error", err.Error()).Error("error encoding event data")
+			s.logger.WithField("error", err.Error()).Error("error encoding event data")
 			return err
 		}
 		if _, err = stmt.Exec(newEvent.GetId().String(), newEvent.GetName(), aggregate.Id, aggregate.Type, aggregate.Version, eventData.Bytes()); err != nil {
-			logger.WithField("error", err.Error()).Error("error inserting event on database")
+			s.logger.WithField("error", err.Error()).Error("error inserting event on database")
 			return err
 		}
 	}
@@ -174,18 +174,18 @@ func (storage *Storage) StoreAggregate(aggregate *models.Aggregate) (err error) 
 		INSERT INTO eventsourcing.snapshot (aggregate_id, aggregate_type, aggregate_version, data)
 		VALUES($1, $2, $3, $4)
 	`, aggregate.Id, aggregate.Type, aggregate.Version, aggregateData.Bytes()); err != nil {
-		logger.WithField("error", err.Error()).Error("error inserting snapshot on database")
+		s.logger.WithField("error", err.Error()).Error("error inserting snapshot on database")
 		return err
 	}
 
 	// dispatch
-	rows, err := storage.db.Query(`
+	rows, err := s.db.Query(`
 		SELECT id
 		FROM eventsourcing.webhook
 		WHERE aggregate_type = $1
 	`, aggregate.Type)
 	if err != nil {
-		logger.WithField("error", err.Error()).Error("error getting webhooks from database")
+		s.logger.WithField("error", err.Error()).Error("error getting webhooks from database")
 		return err
 	}
 
@@ -193,14 +193,14 @@ func (storage *Storage) StoreAggregate(aggregate *models.Aggregate) (err error) 
 	var webhookID string
 	for rows.Next() {
 		if err := rows.Scan(&webhookID); err != nil {
-			logger.WithField("error", err.Error()).Error("error getting webhook from database")
+			s.logger.WithField("error", err.Error()).Error("error getting webhook from database")
 			return err
 		}
 
 		for _, event := range aggregate.Events {
 			var eventData = &bytes.Buffer{}
 			if err := json.NewEncoder(eventData).Encode(event.GetData()); err != nil {
-				logger.WithField("error", err.Error()).Error("error encoding event data")
+				s.logger.WithField("error", err.Error()).Error("error encoding event data")
 				return err
 			}
 
@@ -208,7 +208,7 @@ func (storage *Storage) StoreAggregate(aggregate *models.Aggregate) (err error) 
 				INSERT INTO eventsourcing.dispatch (event_id, event_name, webhook_id, aggregate_id, aggregate_type, aggregate_version, data)
 				VALUES($1, $2, $3, $4, $5, $6, $7)
 			`, event.GetId().String(), event.GetName(), webhookID, aggregate.Id, aggregate.Type, aggregate.Version, eventData.Bytes()); err != nil {
-				logger.WithField("error", err.Error()).Error("error inserting dispatch on database")
+				s.logger.WithField("error", err.Error()).Error("error inserting dispatch on database")
 				return err
 			}
 		}

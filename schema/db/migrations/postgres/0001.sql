@@ -1,5 +1,4 @@
--- +migrate Up
--- SQL in section 'Up' is executed when this migration is applied
+-- migrate up
 
 -- :: AGGREGATE
 CREATE schema eventsourcing;
@@ -35,8 +34,9 @@ CREATE TABLE eventsourcing.event (
 	CONSTRAINT event_aggregate_fkey FOREIGN KEY(aggregate_id, aggregate_type) REFERENCES eventsourcing.aggregate(id, type) INITIALLY DEFERRED
 );
 
-INSERT INTO eventsourcing.event (id, name, aggregate_id, aggregate_type, aggregate_version, data)
-		VALUES ('1', 'nao sei', '1', 'bananas', 0, '{}');
+
+
+
 
 -- :: WEBHOOK HANDLING
 
@@ -75,8 +75,7 @@ CREATE TABLE eventsourcing.dispatch (
 
 
 
--- +migrate Down
--- SQL in section 'Down' is executed when this migration is applied
+-- migrate down
 
 DROP TABLE eventsourcing.aggregate;
 DROP TABLE eventsourcing.snapshot;
