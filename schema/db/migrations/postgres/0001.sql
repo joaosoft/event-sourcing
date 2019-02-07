@@ -1,7 +1,7 @@
 -- migrate up
 
 -- :: AGGREGATE
-CREATE schema eventsourcing;
+CREATE SCHEMA IF NOT EXISTS eventsourcing;
 
 CREATE TABLE eventsourcing.aggregate (
 	id                        TEXT NOT NULL,

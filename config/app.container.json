@@ -1,5 +1,8 @@
 {
   "event-sourcing": {
+    "log": {
+      "level": "info"
+    },
     "db": {
       "driver": "postgres",
       "datasource": "postgres://user:password@localhost:7000/postgres?sslmode=disable&search_path=eventsourcing"
@@ -13,9 +16,6 @@
       "log": {
         "level": "info"
       }
-    },
-    "log": {
-      "level": "info"
     }
   },
   "manager": {
@@ -24,6 +24,3 @@
     }
   }
 }
-
-
-
