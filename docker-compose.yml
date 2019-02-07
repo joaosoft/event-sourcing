@@ -1,14 +1,25 @@
 version: '3.1'
 services:
-  postgres:
-    image: postgres
+  home.postgres:
+    image: postgres:latest
+    container_name: home.postgres
     restart: always
+    command: postgres -c config_file=/postgresql.conf
     environment:
       POSTGRES_USER: user
       POSTGRES_PASSWORD: password
+      POSTGRES_DB: postgres
     ports:
-      - 7001:5432
-
+      - 7000:5432
+    volumes:
+      - "$HOME/docker/home/postgres:/var/lib/postgresql/data"
+      - "$HOME/docker/home/log:/var/log/postgres"
+      - "./examples/config/postgres/init-db.sql:/docker-entrypoint-initdb.d/init-db.sql"
+      - "./examples/config/postgres/postgresql.conf:/postgresql.conf"
+    networks:
+      default:
+        aliases:
+          - home.postgres
 volumes:
   esdata1:
     driver: local
