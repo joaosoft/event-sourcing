@@ -54,7 +54,7 @@ func NewEventSourcing(options ...EventSourcingOption) (*EventSourcing, error) {
 		return nil, err
 	}
 
-	if _, err := migration.Execute(services.OptionUp, 0); err != nil {
+	if _, err := migration.Execute(services.OptionUp, 0, services.ExecutorModeDatabase); err != nil {
 		return nil, err
 	}
 
