@@ -8,7 +8,9 @@
       "datasource": "postgres://user:password@localhost:7000/postgres?sslmode=disable&search_path=eventsourcing"
     },
     "migration": {
-      "path": "schema/db/migrations/postgres",
+      "path": {
+        "database": "schema/db/migrations/postgres"
+      },
       "db": {
         "driver": "postgres",
         "datasource": "postgres://user:password@localhost:7000/postgres?sslmode=disable&search_path=eventsourcing"
