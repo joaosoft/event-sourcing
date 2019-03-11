@@ -44,6 +44,15 @@
 
 [[projects]]
   branch = "master"
+  name = "github.com/joaosoft/auth-types"
+  packages = [
+    "basic",
+    "jwt"
+  ]
+  revision = "c69fd62ab4415c9c103eb2173d7eccb44c6b20fb"
+
+[[projects]]
+  branch = "master"
   name = "github.com/joaosoft/color"
   packages = ["."]
   revision = "17caec6046388cea5751f441ef6b06a7a572abf2"
@@ -52,13 +61,13 @@
   branch = "master"
   name = "github.com/joaosoft/errors"
   packages = ["."]
-  revision = "14ce6b432e14373c6039c7d9fc6141aaec90fdbf"
+  revision = "595507b0a4a675ff2b92ad6f8884f74a36a07df2"
 
 [[projects]]
   branch = "master"
   name = "github.com/joaosoft/go-manager"
   packages = ["."]
-  revision = "18b4eb1be4cbb9e55a90e05f5e2ebc4db0afb15f"
+  revision = "9339e2e09aa8bff3a1d6514be0c977863e11aef4"
 
 [[projects]]
   branch = "master"
@@ -70,7 +79,7 @@
   branch = "master"
   name = "github.com/joaosoft/manager"
   packages = ["."]
-  revision = "18b4eb1be4cbb9e55a90e05f5e2ebc4db0afb15f"
+  revision = "9339e2e09aa8bff3a1d6514be0c977863e11aef4"
 
 [[projects]]
   branch = "master"
@@ -82,19 +91,19 @@
   branch = "master"
   name = "github.com/joaosoft/migration"
   packages = ["services"]
-  revision = "7ddae243c9433445ac8cae40f2aa91edfa65cad2"
+  revision = "11d1585ecf5b2bd0054b0f799e41aa1b0ab4683d"
 
 [[projects]]
   branch = "master"
   name = "github.com/joaosoft/validator"
   packages = ["."]
-  revision = "49d3b2b2015c04ee95591f465e2b9120efb0e4a3"
+  revision = "4c5838fc0d21a02071d0cf087918f6fac60ce622"
 
 [[projects]]
   branch = "master"
   name = "github.com/joaosoft/web"
   packages = ["."]
-  revision = "12b774681e6130a6d19128b7379966b67d6623ac"
+  revision = "5f40ce1666ebcd4ccb554ce6a5f9279fa55f6afc"
 
 [[projects]]
   branch = "master"
@@ -192,8 +201,8 @@
 [[projects]]
   name = "github.com/spf13/jwalterweatherman"
   packages = ["."]
-  revision = "4a4406e478ca629068e7768fc33f3f044173c0a6"
-  version = "v1.0.0"
+  revision = "94f6ae3ed3bceceafa716478c5fbf8d29ca601a1"
+  version = "v1.1.0"
 
 [[projects]]
   name = "github.com/spf13/pflag"
@@ -220,10 +229,10 @@
   version = "v1.0.0"
 
 [[projects]]
-  branch = "master"
   name = "github.com/valyala/fasttemplate"
   packages = ["."]
-  revision = "dcecefd839c4193db0d35b88ec65b4c12d360ab0"
+  revision = "189f40e8adae8acb7c6c3b065d7489f187a548e4"
+  version = "v1.0.0"
 
 [[projects]]
   branch = "master"
@@ -232,13 +241,13 @@
     "acme",
     "acme/autocert"
   ]
-  revision = "7f87c0fbb88b590338857bcb720678c2583d4dea"
+  revision = "c2843e01d9a2bc60bb26ad24e09734fdc2d9ec58"
 
 [[projects]]
   branch = "master"
   name = "golang.org/x/sys"
   packages = ["unix"]
-  revision = "775f8194d0f9e65c46913c7be783d3d95a29333c"
+  revision = "10058d7d4faa7dd5ef860cbd31af00903076e7b8"
 
 [[projects]]
   name = "golang.org/x/text"
