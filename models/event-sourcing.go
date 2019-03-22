@@ -65,7 +65,7 @@ func NewEventSourcing(options ...EventSourcingOption) (*EventSourcing, error) {
 		return nil, err
 	}
 
-	simpleDB.Start(nil)
+	simpleDB.Start()
 
 	service.storage = NewStorage(simpleDB.Get(), service.logger)
 

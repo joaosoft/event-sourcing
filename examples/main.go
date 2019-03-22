@@ -37,7 +37,7 @@ func main() {
 	aggregate1.AddEventHandler("person_change_name", handler_person_change_name)
 	aggregate1.Causes(&models.Event{
 		Id:        common.NewULID(),
-		Name:      "person_change_name",
+		Name:      "person_changed_name",
 		Data:      PersonChangeNameEvent{Name: "manuel"},
 		CreatedAt: time.Now(),
 	})
