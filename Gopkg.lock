@@ -91,7 +91,7 @@
   branch = "master"
   name = "github.com/joaosoft/migration"
   packages = ["services"]
-  revision = "b84c05e242095510aa371a16bb8792f6d9541920"
+  revision = "bfe6250994bf2ebfff485db0534eef4118437353"
 
 [[projects]]
   branch = "master"

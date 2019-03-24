@@ -12,6 +12,7 @@
         "database": "schema/db/migrations/postgres"
       },
       "db": {
+        "schema": "eventsourcing",
         "driver": "postgres",
         "datasource": "postgres://user:password@localhost:7000/postgres?sslmode=disable&search_path=eventsourcing"
       },
