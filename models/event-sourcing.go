@@ -65,7 +65,10 @@ func NewEventSourcing(options ...EventSourcingOption) (*EventSourcing, error) {
 		return nil, err
 	}
 
-	simpleDB.Start()
+	if err = simpleDB.Start(); err != nil {
+		logger.Error(err.Error())
+		return nil, err
+	}
 
 	service.storage = NewStorage(simpleDB.Get(), service.logger)
 
@@ -77,11 +80,11 @@ func NewEventSourcing(options ...EventSourcingOption) (*EventSourcing, error) {
 	return service, nil
 
 }
-func (eventsourcing *EventSourcing) Save(aggregate *Aggregate) (err error) {
+func (es *EventSourcing) Save(aggregate *Aggregate) (err error) {
 
 	if len(aggregate.Events) == 0 {
 		obj := reflect.New(reflect.TypeOf(aggregate.Data).Elem()).Interface()
-		oldAggregate, err := eventsourcing.storage.GetAggregate(aggregate.Id, aggregate.Type, obj)
+		oldAggregate, err := es.storage.GetAggregate(aggregate.Id, aggregate.Type, obj)
 		if err != nil {
 			logger.WithField("error", err.Error()).Error("error saving aggregate")
 			return err
@@ -94,7 +97,7 @@ func (eventsourcing *EventSourcing) Save(aggregate *Aggregate) (err error) {
 		}
 	}
 
-	return eventsourcing.storage.StoreAggregate(aggregate)
+	return es.storage.StoreAggregate(aggregate)
 }
 
 func getAggregateEventsByMapping(oldAggregate *Aggregate, newAggregate *Aggregate) (events []IEvent, err error) {

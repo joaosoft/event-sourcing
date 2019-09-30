@@ -9,9 +9,9 @@ import (
 type EventSourcingOption func(client *EventSourcing)
 
 // Reconfigure ...
-func (eventSourving *EventSourcing) Reconfigure(options ...EventSourcingOption) {
+func (es *EventSourcing) Reconfigure(options ...EventSourcingOption) {
 	for _, option := range options {
-		option(eventSourving)
+		option(es)
 	}
 }
 

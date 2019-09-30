@@ -23,7 +23,7 @@ func NewStorage(db *sql.DB, logger logger.ILogger) *Storage {
 func (s *Storage) GetAggregate(id, typ string, obj interface{}) (*Aggregate, error) {
 
 	// aggregate
-	var aggregate = Aggregate{Id: id, Type: typ}
+	var aggregate = &Aggregate{Id: id, Type: typ}
 	row := s.db.QueryRow(`
 		SELECT version, created_at, updated_at
 		FROM eventsourcing.aggregate
@@ -83,7 +83,7 @@ func (s *Storage) GetAggregate(id, typ string, obj interface{}) (*Aggregate, err
 	}
 	aggregate.Data = obj
 
-	return &aggregate, nil
+	return aggregate, nil
 }
 
 func (s *Storage) StoreAggregate(aggregate *Aggregate) (err error) {
