@@ -20,18 +20,18 @@ type Event struct {
 	CreatedAt time.Time
 }
 
-func (event *Event) GetId() ulid.ULID {
-	return event.Id
+func (e *Event) GetId() ulid.ULID {
+	return e.Id
 }
 
-func (event *Event) GetName() string {
-	return event.Name
+func (e *Event) GetName() string {
+	return e.Name
 }
 
-func (event *Event) GetData() interface{} {
-	return event.Data
+func (e *Event) GetData() interface{} {
+	return e.Data
 }
 
-func (event *Event) GetCreatedAt() time.Time {
-	return event.CreatedAt
+func (e *Event) GetCreatedAt() time.Time {
+	return e.CreatedAt
 }

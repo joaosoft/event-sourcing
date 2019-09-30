@@ -113,11 +113,11 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:f17f3ca15695d6415d3e697282909029f6bdf3861ce9f026e1ee8b61e66a31f3"
+  digest = "1:240af061c3550a103da6442881e11f9ca2432ea2f74c7d21cb47bb70e8d976af"
   name = "github.com/joaosoft/migration"
   packages = ["services"]
   pruneopts = "UT"
-  revision = "e24457e3d14136a81b16b559c4645cd63e3f712b"
+  revision = "0347456f267df3e4bf513a1c16e1985f83772978"
 
 [[projects]]
   branch = "master"

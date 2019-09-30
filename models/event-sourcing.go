@@ -51,10 +51,12 @@ func NewEventSourcing(options ...EventSourcingOption) (*EventSourcing, error) {
 	// execute migrations
 	migration, err := services.NewCmdService(services.WithCmdConfiguration(&service.config.Migration))
 	if err != nil {
+		logger.Error(err.Error())
 		return nil, err
 	}
 
 	if _, err := migration.Execute(services.OptionUp, 0, services.ExecutorModeDatabase); err != nil {
+		logger.Error(err.Error())
 		return nil, err
 	}
 
@@ -74,6 +76,7 @@ func NewEventSourcing(options ...EventSourcingOption) (*EventSourcing, error) {
 
 	// initialize services
 	if err := service.pm.Start(); err != nil {
+		logger.Error(err.Error())
 		return nil, err
 	}
 
@@ -101,7 +104,6 @@ func (es *EventSourcing) Save(aggregate *Aggregate) (err error) {
 }
 
 func getAggregateEventsByMapping(oldAggregate *Aggregate, newAggregate *Aggregate) (events []IEvent, err error) {
-
 	eventMapper := mapper.NewMapper(mapper.WithLogger(logger.Instance))
 
 	var oldMappings map[string]interface{}

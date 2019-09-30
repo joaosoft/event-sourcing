@@ -6,7 +6,7 @@ import (
 )
 
 // EventSourcingOption ...
-type EventSourcingOption func(client *EventSourcing)
+type EventSourcingOption func(es *EventSourcing)
 
 // Reconfigure ...
 func (es *EventSourcing) Reconfigure(options ...EventSourcingOption) {
@@ -17,29 +17,29 @@ func (es *EventSourcing) Reconfigure(options ...EventSourcingOption) {
 
 // WithConfiguration ...
 func WithConfiguration(config *EventSourcingConfig) EventSourcingOption {
-	return func(client *EventSourcing) {
-		client.config = config
+	return func(es *EventSourcing) {
+		es.config = config
 	}
 }
 
 // WithLogger ...
 func WithLogger(l logger.ILogger) EventSourcingOption {
-	return func(eventSourving *EventSourcing) {
-		eventSourving.logger = l
-		eventSourving.isLogExternal = true
+	return func(es *EventSourcing) {
+		es.logger = l
+		es.isLogExternal = true
 	}
 }
 
 // WithLogLevel ...
 func WithLogLevel(level logger.Level) EventSourcingOption {
-	return func(eventSourving *EventSourcing) {
-		eventSourving.logger.SetLevel(level)
+	return func(es *EventSourcing) {
+		es.logger.SetLevel(level)
 	}
 }
 
 // WithManager ...
 func WithManager(mgr *manager.Manager) EventSourcingOption {
-	return func(eventSourving *EventSourcing) {
-		eventSourving.pm = mgr
+	return func(es *EventSourcing) {
+		es.pm = mgr
 	}
 }
