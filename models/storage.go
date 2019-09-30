@@ -127,14 +127,14 @@ func (s *Storage) StoreAggregate(aggregate *Aggregate) (err error) {
 	}
 
 	// aggregate
+	aggregate.Version += 1
+
 	if aggregate.Version == 0 {
-		aggregate.Version += 1
 		_, err = tx.Exec(`
 		INSERT INTO eventsourcing.aggregate (id,  type, version)
 		VALUES($1, $2, $3)
 	`, aggregate.Id, aggregate.Type, aggregate.Version)
 	} else {
-		aggregate.Version += 1
 		_, err = tx.Exec(`
 		UPDATE eventsourcing.aggregate
 		SET version = $1, updated_at = now()
