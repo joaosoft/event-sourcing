@@ -1,4 +1,4 @@
-module github.com/joaosoft/event-sourcing
+module event-sourcing
 
 go 1.17
 
