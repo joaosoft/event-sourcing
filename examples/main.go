@@ -1,9 +1,9 @@
 package main
 
 import (
-	"event-sourcing/common"
-	"event-sourcing/models"
 	"fmt"
+	"github.com/joaosoft/event-sourcing/common"
+	"github.com/joaosoft/event-sourcing/models"
 	"time"
 
 	"github.com/joaosoft/logger"
