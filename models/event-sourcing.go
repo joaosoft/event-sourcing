@@ -1,7 +1,7 @@
 package models
 
 import (
-	"event-sourcing/common"
+	"github.com/joaosoft/event-sourcing/common"
 	"reflect"
 	"strings"
 
